@@ -184,7 +184,7 @@ def generate_ai_report_gemini(team: str, position: str, number: str, name: str, 
     [Content to Visualize]
     1. **Header**: 
        - Title: "2025 YIPP X KBO AI Investment Report"
-       - Subtitle: "{name}"
+       - Subtitle: "{name}" (only name, no other text)
     
     2. **Player Profile (Top Section)**:
        - Visual: A high-quality illustration of a baseball player wearing the **"{team}"** uniform.
@@ -198,6 +198,8 @@ def generate_ai_report_gemini(team: str, position: str, number: str, name: str, 
          - Diversification (분산투자): {radar_contact}
          - Frequency (거래빈도): {radar_speed}
          - Global Share (해외비중): {radar_global}
+
+           display the labels in english on the chart.         
     
     4. **Key Metrics (Baseball Stats)**:
        - AVG (Return): **{p_avg}**
