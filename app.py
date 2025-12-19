@@ -182,6 +182,7 @@ def generate_ai_report_gemini(team: str, position: str, number: str, name: str, 
     ret3 = stats_data.get('종목3 수익률', 0)
     
     # 프롬프트 구성 (투자 리포트 컨셉)
+# 프롬프트 구성 (투자 리포트 컨셉) - 팀 반영 강화
     prompt_text = f"""
     You are an expert UI/UX designer for fintech & sports infographics.
     
@@ -201,7 +202,9 @@ def generate_ai_report_gemini(team: str, position: str, number: str, name: str, 
     
     2. **Player Profile (Top Section)**:
        - Visual: A high-quality illustration of a baseball player wearing the **"{team}"** uniform.
+       - **CRITICAL**: Use the **official team colors and logo style** of **"{team}"** for the uniform.
        - Back View: Show the player's back with Name **"{name}"** and Number **"{number}"**.
+       - **Team Badge**: Display the team name **"{team}"** clearly above or near the position tag.
        - Position Tag: Display **"{position}"** prominently.
     
     3. **Investment Radar (Middle Section)**:
