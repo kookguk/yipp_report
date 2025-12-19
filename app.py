@@ -179,11 +179,12 @@ def generate_ai_report_gemini(team: str, position: str, number: str, name: str, 
     - **Theme Color**: Use Mint Green (#008F53) as the primary accent color.
     - **Style**: Modern, clean, sleek, and data-driven infographic style.
     - **Layout**: Vertical layout (9:16).
+    - **Reference Image**: attached \"image.png\" for style guidance.
     
     [Content to Visualize]
     1. **Header**: 
-       - Title: "2025 YIPP AI Investment Report"
-       - Subtitle: "Player Analysis: {name}"
+       - Title: "2025 YIPP X KBO AI Investment Report"
+       - Subtitle: "{name}"
     
     2. **Player Profile (Top Section)**:
        - Visual: A high-quality illustration of a baseball player wearing the **"{team}"** uniform.
@@ -330,7 +331,7 @@ def step_login():
             new_position = determine_position(row_data)
             st.session_state["position"] = new_position
             
-            st.success(f"반갑습니다, {name}님! 투자 데이터를 분석 중입니다...")
+            st.success(f"반갑습니다, {name}님! 현재까지의 투자 데이터를 분석 중입니다...")
             time.sleep(1) 
             go_next_step()
             st.rerun()
@@ -357,12 +358,11 @@ def step_result():
     </style>
     """, unsafe_allow_html=True)
 
-    st.subheader(f"{name}님의 2025 투자 분석")
-    st.caption(f"소속: {team} | 포지션: {pos}")
+    st.subheader(f"{name}님의 YIPP X KBO 투자 리포트")
+    st.caption(f"{team} | {pos}")
     
     # 텍스트로 요약 정보 보여주기 (디버깅 겸용)
-    with st.expander("📈 투자 기록 미리보기"):
-        st.write(f"**수익률(AVG)**: {data.get('AVG(수익률)', '-')}")
+    with st.expander("📝 투자 기록 요약"):
         st.write(f"**TOP 1 종목**: {data.get('종목1', '-')} ({data.get('종목1 수익률', 0)}%)")
         st.write(f"**TOP 2 종목**: {data.get('종목2', '-')} ({data.get('종목2 수익률', 0)}%)")
         st.write(f"**TOP 3 종목**: {data.get('종목3', '-')} ({data.get('종목3 수익률', 0)}%)")
