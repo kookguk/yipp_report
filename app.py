@@ -270,7 +270,7 @@ def generate_ai_report_gemini(team: str, position: str, number: str, name: str, 
 # -----------------------------
 
 def step_login():
-    st.header("① 내 정보 확인")
+    st.header("① 내 선수 정보 입력")
     st.write("현재까지의 투자 기록을 바탕으로 내 AI 투자 리포트를 생성해보세요.")
 
     # CSS 적용 (민트색 버튼)
@@ -303,12 +303,12 @@ def step_login():
     is_numeric = account.isdigit()
 
     if account and (not is_numeric or not is_valid_length):
-         st.markdown(f":red[❌ 유효한 12자리 계좌번호를 입력해주세요.]")
+         st.markdown(f":red[❌ YIPP 계좌번호는 12자리입니다.]")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     # 리포트 생성 버튼
-    if st.button("AI 리포트 생성하기", type="primary", use_container_width=True, disabled=not(is_valid_name and is_valid_length and is_numeric)):
+    if st.button("AI 투자리포트 생성하기", type="primary", use_container_width=True, disabled=not(is_valid_name and is_valid_length and is_numeric)):
         
         # CSV 조회 로직
         is_registered, row_data = validate_user(name, account)
@@ -361,7 +361,7 @@ def step_result():
     st.caption(f"소속: {team} | 포지션: {pos}")
     
     # 텍스트로 요약 정보 보여주기 (디버깅 겸용)
-    with st.expander("📈 상세 데이터 미리보기"):
+    with st.expander("📈 투자 기록 미리보기"):
         st.write(f"**수익률(AVG)**: {data.get('AVG(수익률)', '-')}")
         st.write(f"**TOP 1 종목**: {data.get('종목1', '-')} ({data.get('종목1 수익률', 0)}%)")
         st.write(f"**TOP 2 종목**: {data.get('종목2', '-')} ({data.get('종목2 수익률', 0)}%)")
@@ -371,20 +371,20 @@ def step_result():
 
     # 이미지 생성
     if st.session_state["report_image_bytes"] is None:
-        status_container.info("🎨 AI가 고객님의 투자 성향과 수익률을 시각화하고 있습니다...")
+        status_container.info("🎨 AI가 고객님의 투자 성향과 수익률이 담긴 투자리포트를 생성 중입니다...")
         
         # Gemini 호출
         img_bytes = generate_ai_report_gemini(team, pos, num, name, data)
         st.session_state["report_image_bytes"] = img_bytes
 
     if st.session_state["report_image_bytes"]:
-        status_container.info("✨ 리포트 생성 완료!")
+        status_container.info("✨ AI 투자리포트 생성 완료!")
         try:
             img = Image.open(BytesIO(st.session_state["report_image_bytes"]))
             st.image(img, use_container_width=True)
             
             st.download_button(
-                label="📥 리포트 다운로드 (인스타 공유용)",
+                label="📸 AI 투자리포트 공유하기",
                 data=st.session_state["report_image_bytes"],
                 file_name=f"yipp_report_{num}.png",
                 mime="image/png",
