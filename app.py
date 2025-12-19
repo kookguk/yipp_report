@@ -15,10 +15,11 @@ from google.genai import types
 # 0. 페이지 기본 설정
 # -----------------------------
 st.set_page_config(
-    page_title="YIPP X KBO AI 투자리포트",
+    page_title="YIPP X KBO 선수 카드 업데이트",
     page_icon="logo.png",
     layout="centered"
 )
+
 
 # -----------------------------
 # 1. Gemini Client 초기화
@@ -37,14 +38,15 @@ except Exception as e:
 # -----------------------------
 # 상수 및 설정
 # -----------------------------
+# 로고 매칭을 위한 구단 리스트 (logos/구단명.png 파일과 일치해야 함)
 KBO_TEAMS = [
     "SSG 랜더스", "롯데 자이언츠", "KIA 타이거즈", "삼성 라이온즈", "한화 이글스",
     "두산 베어스", "LG 트윈스", "KT 위즈", "NC 다이노스", "키움 히어로즈"
 ]
 
-REFERENCE_IMAGE_PATH = "image.png" # 레퍼런스 이미지 (리포트 스타일)
+REFERENCE_IMAGE_PATH = "image.png"
 LOGO_DIR = "logos"
-CSV_FILE_PATH = "customer_report_updated.csv" # 업데이트된 CSV 파일 사용
+CSV_FILE_PATH = "customer_report_updated.csv"
 
 # 테마 컬러 정의 (민트색)
 THEME_COLOR = "#008F53"
@@ -82,6 +84,7 @@ def load_reference_bytes():
         return None
 
 def load_and_resize_logo(team_name, size=(80, 80)):
+    # CSV에 저장된 팀 이름과 로고 파일명이 일치한다고 가정
     path = os.path.join(LOGO_DIR, f"{team_name}.png")
     if os.path.exists(path):
         try:
@@ -91,6 +94,12 @@ def load_and_resize_logo(team_name, size=(80, 80)):
         except Exception:
             return None
     return None
+
+def image_to_base64(image):
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    return f"data:image/png;base64,{img_str}"
 
 def determine_position(row):
     """
@@ -120,6 +129,10 @@ def validate_user(name, account):
     try:
         # 계좌번호를 문자열로 읽기
         df = pd.read_csv(CSV_FILE_PATH, dtype={'계좌번호': str})
+        
+        # [수정됨] 컬럼명 앞뒤 공백 제거 (예: " 팀" -> "팀")
+        # CSV 파일의 컬럼명에 공백이 포함되어 있어 '팀'을 찾지 못하는 문제를 해결합니다.
+        df.columns = df.columns.str.strip()
         
         # 전처리
         df['이름'] = df['이름'].astype(str).str.strip()
@@ -313,15 +326,16 @@ def step_login():
     # 리포트 생성 버튼
     if st.button("AI 투자리포트 생성하기", type="primary", use_container_width=True, disabled=not(is_valid_name and is_valid_length and is_numeric)):
         
-        # CSV 조회 로직
+        # CSV 조회 로직 (컬럼명 공백 문제 해결됨)
         is_registered, row_data = validate_user(name, account)
         
         if is_registered:
             # 데이터 저장
             st.session_state["player_data"] = row_data
             
-            # 팀 정보 가져오기
+            # 팀 정보 가져오기 (컬럼명 공백이 제거되었으므로 '팀' 키로 안전하게 접근 가능)
             fetched_team = row_data.get('팀', None)
+            
             if fetched_team and str(fetched_team).lower() != 'nan' and str(fetched_team).strip() != "":
                 st.session_state["team"] = str(fetched_team).strip()
             else:
